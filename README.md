@@ -3,14 +3,14 @@
 
 A 6 button macropad with a display for button labels and a mouse knob with haptic feedback!
 
-[Project Video Link](https://youtu.be/bNUKRJQjuvQ)
+[Project Video Link](https://youtu.be/bNUKRJQjubQ)
 
 #### Features
 
 - 6 Programmable  Macro Buttons
 - 128x64 OLED display for button labels and Icons
 - Support for up to 256 profiles for a total of 1536 Macros!
-- Easy XML configuration, no special drivers required!
+- Support for YAML or XML configuration, no special drivers required!
 - Macro button combinations can be configured with up to 3 simultaneous buttons or 3 seperate button presses with configurable delays between them.
 - Micro SD Storage for button labels and config files.
 - Haptic feedback mouse wheel with three different modes. Clicky, Twist and Momentum
@@ -92,11 +92,42 @@ You will also need to have your SD card set up correctly in order to use the mac
 Copy the entire contents of the "Example SD Card" folder onto you SD card to begin with to ensure everything is working before you start working on your own files.
 
 
-### XML Config
+### Configuration (YAML or XML)
 
+The firmware will check for `config.yaml` first. If it is not found, it will look for `config.xml`.
+
+#### YAML Config (Recommended)
+Create a `config.yaml` file on your SD card. It is much easier to read and edit than XML.
+
+```yaml
+Settings:
+  LED_Mode: Bands
+  LED_Primary: [255, 0, 0]
+  LED_Secondary: [0, 0, 255]
+  Clicky_P: 0.5
+  Clicky_I: 0.0
+  Twist_P: 0.65
+  Twist_I: 0.2
+  Momentum_P: 0.3
+  Momentum_I: 0.0
+
+Profiles:
+  - name: "Example 1"
+    WheelMode: Clicky
+    WheelKey: 0
+    Buttons:
+      - label: "Button 1", actions: [[0, 49], [0, 0], [0, 0]]
+      - label: "Button 2", actions: [[0, 50], [0, 0], [0, 0]]
+      - label: "Button 3", actions: [[0, 51], [0, 0], [0, 0]]
+      - label: "Button 4", actions: [[0, 52], [0, 0], [0, 0]]
+      - label: "Button 5", actions: [[0, 53], [0, 0], [0, 0]]
+      - label: "Button 6", actions: [[0, 54], [0, 0], [0, 0]]
+```
+
+#### XML Config
 In the `<Settings>` tag of the XML file you will find all of the settings for the LED's, along with the P and I tuning values for the various wheel modes.
 
-There are 6 acceptable inpts for the `<LED_Mode>` tag. If you spell the words incorrectly the commands won't work, so it would be a good idea to copy and paste from here:
+There are 6 acceptable inputs for the `<LED_Mode>` tag. If you spell the words incorrectly the commands won't work, so it would be a good idea to copy and paste from here:
 
 Breath, Bands, Halo, Rainbow, Solid, Off
 
@@ -112,7 +143,7 @@ Then, there is a `<WheelMode>` and `<WheelKey>` tag. `<WheelKey>` can be any key
 Next is a `<MacroButtons>` tag that holds all of our Macro buttons for the profile.
 
 Each macro button looks like this: 
-```
+```xml
 <MacroButton>
     <Action>0,68</Action>
     <Action>0,0</Action>

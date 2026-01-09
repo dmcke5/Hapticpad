@@ -59,6 +59,7 @@ const int _CS = 5;
 const int _SCK = 2;
 
 bool sdDetected = false;
+bool useYaml = false; // Added for YAML support
 
 U8G2_SSD1309_128X64_NONAME0_1_4W_SW_SPI u8g2(U8G2_R0, 28, 22, 6, 7, 8);
 
@@ -215,8 +216,6 @@ void setup1(){ //core 1
 
   initialiseSD();
 
-  loadSettings("/config.xml");
-
   calculateColourMultiplier();
 
   u8g2.begin();
@@ -256,7 +255,7 @@ void buttonRead(){ //Read button inputs and set state arrays.
       if(profilePlusStarted){
         if(activeProfile < totalProfiles - 1){
           activeProfile++;
-          loadProfile("/config.xml", activeProfile);
+          if(useYaml) loadProfileYaml("/config.yaml", activeProfile); else loadProfile("/config.xml", activeProfile);
           storeLastProfile();
           Serial.print("Stored last profile = ");
           Serial.println(activeProfile);
@@ -272,14 +271,12 @@ void buttonRead(){ //Read button inputs and set state arrays.
       } else if(profileMinusStarted && profileChangeTimer + 100 < millis()){
         profileSelectMenu = true;
         profileChangeTimer = millis();
-        //delay(500);
-        //Serial.println("Trigger Menu");
       }
     } else {
       if(profileMinusStarted){
         if(activeProfile > 0 ){
           activeProfile--;
-          loadProfile("/config.xml", activeProfile);
+          if(useYaml) loadProfileYaml("/config.yaml", activeProfile); else loadProfile("/config.xml", activeProfile);
           storeLastProfile();
           Serial.print("Stored last profile = ");
           Serial.println(activeProfile);
@@ -308,7 +305,7 @@ void buttonRead(){ //Read button inputs and set state arrays.
         profileSelectMenu = false;
         profileMinusStarted = false;
         profilePlusStarted = false;
-        loadProfile("/config.xml", activeProfile);
+        if(useYaml) loadProfileYaml("/config.yaml", activeProfile); else loadProfile("/config.xml", activeProfile);
         storeLastProfile();
         Serial.print("Stored last profile = ");
         Serial.println(activeProfile);
@@ -330,17 +327,22 @@ void initialiseSD(){
     Serial.println("SD Initialised!");
   }
 
-  totalProfiles = countProfiles("/config.xml");
-  if(debug){
-    Serial.print("Profiles found: ");
-    Serial.println(totalProfiles);
+  // Detection logic for YAML vs XML
+  if (SD.exists("/config.yaml")) {
+    useYaml = true;
+    totalProfiles = countProfilesYaml("/config.yaml");
+    loadSettingsYaml("/config.yaml");
+  } else {
+    useYaml = false;
+    totalProfiles = countProfiles("/config.xml");
+    loadSettings("/config.xml");
   }
 
   activeProfile = readLastProfile();
   Serial.print("Active Profile = ");
   Serial.println(activeProfile);
 
-  loadProfile("/config.xml", activeProfile);
+  if(useYaml) loadProfileYaml("/config.yaml", activeProfile); else loadProfile("/config.xml", activeProfile);
   loadButtonIcons();
 }
 

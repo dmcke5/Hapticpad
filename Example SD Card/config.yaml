@@ -1,0 +1,33 @@
+Settings:
+  LED_Mode: Bands
+  LED_Primary: [255, 0, 0]
+  LED_Secondary: [0, 0, 255]
+  Clicky_P: 0.5
+  Clicky_I: 0.0
+  Twist_P: 0.65
+  Twist_I: 0.2
+  Momentum_P: 0.3
+  Momentum_I: 0.0
+
+Profiles:
+  - name: "Example 1"
+    WheelMode: Clicky
+    WheelKey: 0
+    Buttons:
+      - label: "Button 1", actions: [[0, 49], [0, 0], [0, 0]]
+      - label: "Button 2", actions: [[0, 50], [0, 0], [0, 0]]
+      - label: "Button 3", actions: [[0, 51], [0, 0], [0, 0]]
+      - label: "Button 4", actions: [[0, 52], [0, 0], [0, 0]]
+      - label: "Button 5", actions: [[0, 53], [0, 0], [0, 0]]
+      - label: "Button 6", actions: [[0, 54], [0, 0], [0, 0]]
+
+  - name: "Media Control"
+    WheelMode: Momentum
+    WheelKey: 0
+    Buttons:
+      - label: "Prev", actions: [[0, 177], [0, 0], [0, 0]]
+      - label: "Play", actions: [[0, 179], [0, 0], [0, 0]]
+      - label: "Next", actions: [[0, 176], [0, 0], [0, 0]]
+      - label: "Mute", actions: [[0, 173], [0, 0], [0, 0]]
+      - label: "Vol-", actions: [[0, 174], [0, 0], [0, 0]]
+      - label: "Vol+", actions: [[0, 175], [0, 0], [0, 0]]
