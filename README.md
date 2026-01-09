@@ -88,12 +88,17 @@ Copy the entire contents of the "Example SD Card" folder onto you SD card to beg
 
 #### XML Config
 
-In the <Settings > tag of the XML file you will find all of the settings for the LED's, along with the P and I tuning values for the various wheel modes.
+In the "Settings" tag of the XML file you will find all of the settings for the LED's, along with the P and I tuning values for the various wheel modes.
 
-There are 6 acceptable inpts for the <LED_Mode> tag.
+There are 6 acceptable inpts for the "LED_Mode" tag.
 -Breath
+
 -Bands
+
 -Halo
+
 -Rainbow
+
 -Solid
+
 -Off
