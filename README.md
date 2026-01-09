@@ -69,5 +69,5 @@ Print all files in the 3D Files/STL's folder except: "Custom Keycap.STL", "Macro
 
 I made this quick picture to show how the wheel motor gets assembled:
 
-![Alt text](Motor Stack.png "Motor Assembly")
+![Alt text](MotorStack.png "Motor Assembly")
 
