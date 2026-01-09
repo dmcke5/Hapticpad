@@ -106,9 +106,11 @@ Then, there is a `<WheelMode>` and `<WheelKey>` tag. `<WheelKey>` can be any key
 Next is a `<MacroButtons>` tag that holds all of our Macro buttons for the profile.
 
 Each macro button looks like this: 
-`<MacroButton>
+```
+<MacroButton>
     <Action>0,68</Action>
     <Action>0,0</Action>
     <Action>0,0</Action>
     <Label>Dimension</Label>
-</MacroButton>`
+</MacroButton>
+```
