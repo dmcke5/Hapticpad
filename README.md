@@ -81,7 +81,7 @@ The magnet holder should be a snug fit inside the hollow motor shaft. If it isn'
 > [!WARNING] 
 > I'm running out of time before the video goes live, so if you're seeing this the PCB's won't be uploaded yet but they will be within 24 hours! 
 
-#### Software
+### Software
 
 > [!WARNING] 
 > The software is still a work in progress. Everything is functional currently, but I'm sure I will have missed some bugs as I've only had time to do some limited testing so far. I will work on clearing as many bugs as I can in the coming weeks but let me know if you run into any! If you're going to submit an issue with a bug, please try and recount your steps to re-create the bug as it will make fixing it much easier!
@@ -92,7 +92,7 @@ You will also need to have your SD card set up correctly in order to use the mac
 Copy the entire contents of the "Example SD Card" folder onto you SD card to begin with to ensure everything is working before you start working on your own files.
 
 
-#### XML Config
+### XML Config
 
 In the `<Settings>` tag of the XML file you will find all of the settings for the LED's, along with the P and I tuning values for the various wheel modes.
 
