@@ -90,15 +90,16 @@ Copy the entire contents of the "Example SD Card" folder onto you SD card to beg
 
 In the "Settings" tag of the XML file you will find all of the settings for the LED's, along with the P and I tuning values for the various wheel modes.
 
-There are 6 acceptable inpts for the "LED_Mode" tag.
--Breath
+There are 6 acceptable inpts for the "LED_Mode" tag. If you spell the words incorrectly the commands won't work, so it would be a good idea to copy and paste from here:
 
--Bands
+Breath, Bands, Halo, Rainbow, Solid, Off
 
--Halo
+LED_Primary and LED_Secondary are the two colours used in the effects and they are formatted in the order of Red, Green and Blue with values between 0-255. Rainbow and Off obviously don't make use of these colour options and solid just sets the colour to LED_Primary and ignores LED_Secondary.
 
--Rainbow
+The motor tuning for the printed version of the wheel should be pretty good, so try with my default P and I values first before you do any tuning. I've left out D from the tuning options as it doesn't seem to be needed for this type of feedback and just makes tuning more complex.
 
--Solid
+In the "Profiles" tag is where each profile is stored.
 
--Off
+Each profile has a name value assigned like this: <Profile name="Solidworks">
+Then, there is a WheelMode and WheelKey tag. WheelKey can be any key value from this website https://keycode-visualizer.netlify.app/ and will be held down when the wheel is moving. WheelMode can only be one of three things: Clicky, Twist or Momentum. Again, these have to be exact so copy and paste from here to ensure they work.
+
