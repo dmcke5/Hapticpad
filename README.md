@@ -78,19 +78,44 @@ The magnet holder should be a snug fit inside the hollow motor shaft. If it isn'
 
 ### PCB's
 
-> [!WARNING] 
-> I'm running out of time before the video goes live, so if you're seeing this the PCB's won't be uploaded yet but they will be within 24 hours! 
+You will need to have both PCB's made to complete this project. They are very simple PCB's with only two layers, so they should be cheap!
+Just upload the Zip files found in "PCB's/MacroPad" and "PCB's/MacroPad Controller Board" to your PCB manufacturer of choice and they shouldn't need any further info.
+
+#### - Controller Board
+
+The controller board has the main components labelled so you should easily be able to tell where everything goes. I've also labelled power and ground connections on the motor controller and SD reader so just double check you are installing them up the correct way! The SD reader should be flat against the PCB as shown in the video, whilst the motor controller gets installed on its pin headers with the "bottom" of the board face up (the side with the pin labels should be showing). The Pico should also be soldered directly to the board with its USB port facing outwards.
+C1 on the Controller board is supposed to be a 10000pF 50v Capacitor. I never ended up fitting mine and I've had no issues but Sparkfun recommended it so I've left the pads there in case you decide to fit it.
+
+#### - Main Board
+
+If you're planning to include the LED's, do them first! There should be one corner of the LED with an arrow shaped rebate. It should point away from the pad labelled with a "1". All of the C components on this board are 0.1uF 0603 size capacitors. They are also needed to make the LED's work.
+
+The switches you need for two profile switching buttons are: EVQ-Q2B03W
+
+They share the same footprint as the EVQ-Q2B02W's but are a bit taller so be careful to ensure you get the right ones!
+
+#### - Connecting the boards
+
+All of the pads on both of the PCB's are actually tiny little through holes, I find these are much more robust for beginners which is why I chose them. The hole is too small to put the wire through so just treat them as a surface mount pad!
+
+The controller board has a set of pads labelled "Display". Use the cable that was included with your screen and solder the wires for the display directly to these pads.
+I've matched the labels on my PCB to the display so it should be easy to work out where everything goes.
+
+The two boards get connected together with wires. Just match the labels on both boards and everything should be in the correct spot! I know this is messy compared to a ribbon cable, but I was trying to keep the project as beginner friendly as possible!
+
+The three motor wires get connected to the pins labelled U V and W on the controller board. The software should detect the motor direction when it first starts up so any order for these wires is fine but if you have problems, try swapping two of them!
+
+The Encoder connections are labelled too so just connect the four pins I've included on the board and ignore the remainder of the pins that are on the encoder, we don't need them!
 
 ### Software
 
 > [!WARNING] 
-> The software is still a work in progress. Everything is functional currently, but I'm sure I will have missed some bugs as I've only had time to do some limited testing so far. I will work on clearing as many bugs as I can in the coming weeks but let me know if you run into any! If you're going to submit an issue with a bug, please try and recount your steps to re-create the bug as it will make fixing it much easier!
+> The software is still a work in progress. Everything seen in the video is functional currently, but I'm sure I will have missed some bugs as I've only had time to do some limited testing so far. I will work on clearing as many bugs as I can in the coming weeks but let me know if you run into any! If you're going to submit an issue with a bug, please try and recount your steps to re-create the bug as it will make fixing it much easier!
 
 If you don't wish to compile the code yourself, just copy the latest version of the MacroPad.UF2 file from the software folder and install it directly onto the memory of your Pico using the boot method shown in the video.
 
 You will also need to have your SD card set up correctly in order to use the macro pad.
 Copy the entire contents of the "Example SD Card" folder onto you SD card to begin with to ensure everything is working before you start working on your own files.
-
 
 ### XML Config
 
