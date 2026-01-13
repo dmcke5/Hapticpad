@@ -36,7 +36,9 @@ A 6 button macropad with a display for button labels and a mouse knob with hapti
 
 4x 6x1mm Magnets - https://www.aliexpress.com/item/1005009894772141.html
 
-2x Tactile Buttons - https://www.digikey.com/en/products/detail/panasonic-electronic-components/EVQ-Q2B03W/762882
+2x Tactile Buttons - https://www.digikey.com/en/products/detail/panasonic-electronic-components/EVQ-Q2B03W/762882 (These are the ones I used, but shipping is expensive)
+
+2x Alternative Tactile Buttons - https://www.aliexpress.com/item/1005008326208629.html (These seem like a suitable replacement for the EVQ-Q2B03W switches but I haven't treid them)
 
 The following parts are optional if you want to include the LEDS:
 
