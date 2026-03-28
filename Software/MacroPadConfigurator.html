@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Haptic Pad Configurator</title>
+    <style>
+        @layer pico, pickr, app;
+        @import url("https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css") layer(pico);
+        @import url("https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css") layer(pickr);
+    </style>
+    <!-- Google Fonts (Outfit & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;700&display=swap">
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
+
+    <style>
+        @layer app {
+            :root {
+                --pico-body-color: #ccc;
+                --pico-color: #ccc;
+                --pico-text-selection-color: rgba(0, 122, 204, 0.3);
+                --pico-background-color: transparent;
+                --pico-h1-color: #fff;
+                --pico-h2-color: #fff;
+                --pico-h3-color: #fff;
+                --pico-h4-color: #fff;
+                --pico-h5-color: #fff;
+                --pico-h6-color: #fff;
+                --pico-primary: #007acc;
+                --pico-primary-hover: #0098ff;
+                --pico-primary-focus: rgba(0, 122, 204, 0.5);
+                --pico-primary-inverse: #fff;
+                --pico-form-element-background-color: rgba(30, 30, 30, 0.7);
+                --pico-form-element-border-color: rgba(255, 255, 255, 0.1);
+                --pico-form-element-active-border-color: var(--pico-primary);
+                --pico-form-element-focus-color: var(--pico-primary-focus);
+                --pico-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                --font-headings: 'Outfit', sans-serif;
+                --ring-size: min(7rem, 25vw);
+                --panel-bg: rgba(30, 30, 30, 0.75);
+            }
+
+
+            body {
+                background: #1e1e1e;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                margin: 0;
+                overflow: hidden;
+                position: relative;
+            }
+
+            #ambientBg {
+                position: fixed;
+                width: 150vw;
+                height: 150vw;
+                transform: translate(-50%, -50%);
+                border-radius: 50%;
+                filter: blur(140px);
+                opacity: 0.5;
+                z-index: -1;
+                pointer-events: none;
+                mask-image: radial-gradient(circle, #000 30%, transparent 70%);
+                -webkit-mask-image: radial-gradient(circle, #000 30%, transparent 70%);
+                transition: opacity 1s, filter 1s;
+            }
+
+            h1, h2, h3, h4 { font-family: var(--font-headings); }
+
+            /* Layout Utilities */
+            .flex { display: flex; }
+            .flex-col-util { display: flex; flex-direction: column; }
+            .flex-1 { flex: 1; }
+            .items-center { align-items: center; }
+            .items-stretch { align-items: stretch; }
+            .gap-xs { gap: 0.5rem; }
+            .gap-sm { gap: 0.75rem; }
+            .gap-md { gap: 1.5rem; }
+            .m-0 { margin: 0 !important; }
+            .mt-0 { margin-top: 0 !important; }
+            .mt-xs { margin-top: 0.5rem; }
+            .mb-0 { margin-bottom: 0 !important; }
+            .mb-md { margin-bottom: 1.25rem; }
+            .mb-lg { margin-bottom: 1.5rem; }
+            .text-xs { font-size: 0.75rem; }
+            .text-dim { color: #ccc; }
+
+            /* Glassmorphism Classes */
+            .glass-panel { background: var(--panel-bg); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+
+            .main-layout {
+                display: flex;
+                padding: 0;
+                flex: 1;
+                height: 100vh;
+                overflow: hidden;
+                position: relative;
+                z-index: 5;
+            }
+
+            .sidebar {
+                min-width: 240px;
+                width: 240px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                background: var(--panel-bg);
+                border-right: 1px solid rgba(255, 255, 255, 0.05);
+                font-size: 0.75rem;
+
+                .brand-header {
+                    padding: 1.5rem 1rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                    background: rgba(0, 0, 0, 0.1);
+                    h1 { margin: 0; font-size: 0.85rem; font-weight: 600; color: #fff; letter-spacing: -0.01em; }
+                    .material-symbols-outlined { color: var(--pico-primary); font-size: 1.25rem; }
+                }
+
+                .sidebar-actions {
+                    padding: 1rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                    button {
+                        width: 100%;
+                        margin: 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        padding: 0.6rem 0.75rem;
+                        font-size: 0.7rem;
+                        border-radius: 6px;
+                    }
+                    .material-symbols-outlined { font-size: 1.1rem; }
+                }
+
+                .sidebar-header {
+                    padding: 0.85rem;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    h2 { margin: 0; font-size: 0.7rem; color: #e5e5e5; letter-spacing: 0.05em; }
+                }
+
+                .profile-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
+            }
+
+            .profile-list li {
+                padding: 0.6rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: all 0.2s;
+                color: #999;
+                font-size: 0.7rem;
+                white-space: nowrap;
+                gap: 1rem;
+                border-left: 4px solid transparent;
+                &:hover { background: rgba(255, 255, 255, 0.05); color: #ccc; .profile-actions { opacity: 1; } }
+                &.active { background: rgba(0, 122, 204, 0.15); color: #fff; border-left: 4px solid var(--pico-primary); font-weight: 500; .profile-actions { opacity: 1; } }
+            }
+
+            .profile-actions { display: flex; gap: 0.25rem; opacity: 0; transition: opacity 0.2s; }
+            .profile-list li:hover .profile-actions, .profile-list li.active .profile-actions { opacity: 1; }
+
+            .icon-btn {
+                background: transparent !important;
+                border: none;
+                color: inherit;
+                padding: 4px !important;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 6px;
+                transition: all 0.1s ease;
+            }
+
+            .icon-btn:hover { background: rgba(255, 255, 255, 0.15) !important; transform: scale(1.1); }
+            .icon-btn-danger:hover { background: rgba(255, 60, 60, 0.2) !important; color: #ff5555; }
+
+            .editor-area {
+                flex: 1;
+                overflow-y: auto;
+                margin: 0;
+                padding: 2.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 2rem;
+                align-items: center;
+            }
+
+            .editor-container {
+                width: 100%;
+                max-width: 1000px;
+                display: flex;
+                flex-direction: column;
+                gap: 2rem;
+                position: relative;
+                z-index: 1;
+            }
+
+            .card {
+                border-radius: 16px; padding: 2rem; transition: transform 0.2s, box-shadow 0.2s;
+                &:hover { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); }
+                h2, h3 { font-size: 1.2rem; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin: -2rem -2rem 1.5rem -2rem; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+            }
+
+            .flex-row { display: flex; gap: 2rem; align-items: flex-start; }
+            .flex-col { display: flex; flex-direction: column; gap: 1.25rem; flex: 1; }
+            .form-group { margin-bottom: 0; label { display: block; margin-bottom: 0.35rem; font-weight: 500; font-size: 0.9rem; color: #ddd; } }
+            .form-help { display: block; font-size: 0.75rem; color: #888; margin-top: 0.25rem; line-height: 1.3; }
+            .form-help-above { margin-top: 0; margin-bottom: 1.25rem; }
+            input[type="text"],
+            input[type="number"],
+            select {
+                border-radius: 8px;
+                transition: all 0.2s;
+                margin-bottom: 0;
+                &:focus { outline: none; border-color: var(--pico-primary) !important; box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.2) !important; }
+            }
+
+            /* LED Visualizer */
+            .led-visualizer-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .tuning-panel {
+                display: flex;
+                flex-direction: column;
+                gap: 1.25rem;
+                margin-top: 1rem;
+                padding: 1rem;
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 8px;
+                border: 1px solid rgba(255, 255, 255, 0.03);
+            }
+            .tuning-item {
+                label { color: #fff; }
+                .tuning-pi-row { display: flex; gap: 1rem; align-items: center; .pi-label { margin-bottom: 0; color: #ddd; font-size: 0.75rem; text-align: right; } }
+            }
+            .tuning-divider { border-color: rgba(255, 255, 255, 0.05); margin: 0; }
+            .profile-field-wide { flex: 2; }
+            .profile-field-mid { flex: 1.5; }
+
+            .input-with-btn {
+                display: flex; gap: 0.5rem; align-items: stretch;
+                input { flex: 1; margin: 0; }
+                button { margin: 0; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
+            }
+
+            .hidden { display: none !important; }
+            .action-flex-1 { flex: 1; }
+            .action-flex-2 { flex: 2; }
+            .action-label { font-size: 0.75rem; }
+            .action-input { width: 100%; }
+            .record-btn-fixed { margin: 0; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
+            .action-row { display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 0.75rem; }
+            .profile-settings-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: end; margin-bottom: 3rem; }
+            .pid-description { margin-bottom: 1rem; }
+
+            .led-ring {
+                width: var(--ring-size);
+                height: var(--ring-size);
+                border-radius: 50%;
+                border: calc(var(--ring-size) * 0.1) solid #222;
+                position: relative;
+                background: radial-gradient(circle at 30% 30%, #353535 0%, #111 80%);
+                box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9), 0 10px 30px rgba(0, 0, 0, 0.5);
+                transition: all 0.3s;
+            }
+
+            .led-mode-Solid { border-color: var(--led-primary); box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9), 0 0 20px var(--led-primary); }
+            .ambient-mode-Solid { background-color: var(--led-primary); }
+            .led-mode-Breath { animation: breathe 8s infinite ease-in-out; }
+            .ambient-mode-Breath { animation: ambient-breathe 8s infinite ease-in-out; }
+            .led-mode-Bands {
+                border-color: transparent;
+                background: radial-gradient(circle at 30% 30%, #353535 0%, #111 80%) padding-box, repeating-conic-gradient(var(--led-primary) 0 18deg, var(--led-secondary) 18deg 36deg) border-box;
+                animation: spin 8s linear infinite;
+            }
+            .ambient-mode-Bands { background: repeating-conic-gradient(var(--led-primary) 0 18deg, var(--led-secondary) 18deg 36deg); filter: blur(40px) !important; animation: ambient-spin 8s linear infinite; }
+            .led-mode-Halo {
+                border-color: transparent;
+                background: radial-gradient(circle at 30% 30%, #353535 0%, #111 80%) padding-box, conic-gradient(var(--led-primary) 0deg, var(--led-secondary) 360deg) border-box;
+                box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9); animation: spin 4s linear infinite;
+            }
+            .ambient-mode-Halo { background: conic-gradient(var(--led-primary) 0deg, var(--led-secondary) 360deg); animation: ambient-spin 4s linear infinite; }
+            .led-mode-Rainbow {
+                border-color: transparent;
+                background: radial-gradient(circle at 30% 30%, #353535 0%, #111 80%) padding-box, conic-gradient(red, yellow, lime, aqua, blue, magenta, red) border-box;
+                animation: spin 8s linear infinite;
+            }
+            .ambient-mode-Rainbow { background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); animation: ambient-spin 8s linear infinite; }
+            .led-mode-Off { border-color: #111; box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9); }
+            .ambient-mode-Off { background: transparent; }
+
+            @keyframes breathe {
+                0%, 100% { border-color: var(--led-primary); box-shadow: inset 0 0 10px rgba(0,0,0,0.9), 0 0 15px var(--led-primary); }
+                50% { border-color: var(--led-secondary); box-shadow: inset 0 0 10px rgba(0,0,0,0.9), 0 0 15px var(--led-secondary); }
+            }
+            @keyframes ambient-breathe { 0%, 100% { background-color: var(--led-primary); } 50% { background-color: var(--led-secondary); } }
+            @keyframes spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+            @keyframes ambient-spin { from { transform: translate(-50%,-50%) rotate(0); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+            .color-pickers { display: flex; gap: 1.5rem; margin-top: 1rem; }
+
+            .pickr .pcr-button {
+                margin: 0;
+                border: none !important;
+                border-radius: 8px !important;
+                background: var(--panel-bg) !important;
+                box-shadow: 0 0 10px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05) !important;
+                width: 100%;
+                overflow: hidden !important;
+                transition: box-shadow 0.2s, transform 0.1s;
+                &:focus { outline: none !important; box-shadow: 0 0 0 3px var(--pico-primary-focus) !important; }
+                &::before { display: none !important; }
+                &::after { position: absolute; top:0; left:0; width:100%; height:100%; border-radius: 0; }
+            }
+
+
+            /* Layout Grids */
+            .tuning-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+                margin-top: 1rem;
+                padding: 1rem;
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 8px;
+                border: 1px solid rgba(255, 255, 255, 0.03);
+            }
+
+            details[open] summary { margin-bottom: 1rem; color: var(--pico-primary); }
+
+            .macro-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+                gap: 1.5rem;
+                margin-top: 1rem;
+            }
+
+            .macro-card {
+                background: var(--panel-bg);
+                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 1.5rem;
+                border-radius: 12px;
+                transition: all 0.2s ease;
+                &:hover { border-color: var(--led-primary, rgba(255, 255, 255, 0.15)); background: rgba(30, 30, 30, 0.6); }
+                header {
+                    background: transparent;
+                    border-bottom-color: rgba(255, 255, 255, 0.03);
+                    margin: -1.5rem -1.5rem 1.25rem -1.5rem;
+                    padding: 1rem 1.5rem;
+                    font-family: var(--font-headings);
+                    font-size: 1.1rem;
+                    color: #eee;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+            }
+
+            .action-row {
+                display: flex;
+                gap: 0.75rem;
+                align-items: flex-end;
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                &:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+            }
+
+            .record-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                margin: 0;
+                padding: var(--pico-form-element-spacing-vertical);
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                &:hover { background: rgba(255, 255, 255, 0.1); }
+                &.recording { background: #ff3b3b; border-color: #ff3b3b; color: #fff; animation: pulse-red 1.5s infinite; }
+            }
+            @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 59, 59, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0); } }
+            .tooltip-icon { font-size: 1rem; color: #888; cursor: help; vertical-align: text-bottom; margin-left: 4px; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Ambient Glow Layer -->
+    <div id="ambientBg" class="ambient-mode-Off"></div>
+
+    <main class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand-header">
+                <span class="material-symbols-outlined">settings_input_component</span>
+                <h1>Haptic Pad Setup</h1>
+            </div>
+
+            <div class="sidebar-actions">
+                <input type="file" id="fileImport" accept=".xml" class="hidden">
+                <button class="outline" onclick="document.getElementById('fileImport').click()">
+                    <span class="material-symbols-outlined">upload</span> Load Config
+                </button>
+                <button id="btnExport" class="primary">
+                    <span class="material-symbols-outlined">download</span> Download Config
+                </button>
+            </div>
+
+            <div class="sidebar-header">
+                <h2>PROFILES (<span id="profileCount">0</span>/256)</h2>
+                <button id="btnAddProfile" class="icon-btn outline" title="Create New Profile">
+                    <span class="material-symbols-outlined">library_add</span>
+                </button>
+            </div>
+            <ul class="profile-list" id="profileList">
+                <!-- Rendered via JS -->
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <section class="editor-area hidden" id="editorArea">
+            <div class="editor-container">
+                <!-- Global Settings -->
+                <div class="glass-panel card">
+                    <h2><span class="material-symbols-outlined">tune</span> Device Global Settings</h2>
+
+                    <div class="flex-row">
+                        <!-- Visualizer -->
+                        <div class="led-visualizer-container">
+                            <div id="ledRing" class="led-ring led-mode-Solid"></div>
+                        </div>
+
+                        <!-- LED Settings -->
+                        <div class="flex-col">
+                            <div class="form-group">
+                                <label for="ledMode">LED Lighting Effect</label>
+                                <span class="form-help form-help-above">Select the visual animation playing on the macropad ring.</span>
+                                <select id="ledMode">
+                                    <option value="Solid">Solid</option>
+                                    <option value="Breath">Breath</option>
+                                    <option value="Bands">Bands</option>
+                                    <option value="Halo">Halo</option>
+                                    <option value="Rainbow">Rainbow</option>
+                                    <option value="Off">Off</option>
+                                </select>
+                            </div>
+
+                            <!-- Color Pickers (moved here) -->
+                            <div class="tuning-panel mt-0 mb-md">
+                                <div class="flex-col-util gap-xs">
+                                    <div>
+                                        <label>LED Colors</label>
+                                        <span class="form-help form-help-above mb-0">Primary and secondary colours used by effects.</span>
+                                    </div>
+                                    <div class="flex gap-md mt-xs">
+                                        <div class="flex flex-1 items-center gap-sm">
+                                            <div class="flex-1">
+                                                <div id="pickerPrimary"></div>
+                                            </div>
+                                            <label class="m-0 text-xs text-dim">Primary</label>
+                                        </div>
+                                        <div class="flex flex-1 items-center gap-sm">
+                                            <div class="flex-1">
+                                                <div id="pickerSecondary"></div>
+                                            </div>
+                                            <label class="m-0 text-xs text-dim">Secondary</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <details>
+                                <summary>Advanced Motor Tuning PID</summary>
+                                <span class="form-help pid-description">
+                                    <strong>P (Proportional)</strong>: Strength/firmness of the detent/haptic effect.<br>
+                                    <strong>I (Integral)</strong>: Steady-state correction (how aggressively it fights resistance).
+                                </span>
+
+                                <div class="tuning-panel">
+                                    <div class="tuning-item">
+                                        <label>Clicky Notches</label>
+                                        <span class="form-help form-help-above">Controls sharpness and resistance of notches.</span>
+                                        <div class="tuning-pi-row">
+                                            <label class="pi-label">Proportional</label>
+                                            <input type="number" step="0.01" id="clickyP">
+                                            <label class="pi-label">Integral</label>
+                                            <input type="number" step="0.01" id="clickyI">
+                                        </div>
+                                    </div>
+
+                                    <hr class="tuning-divider">
+
+                                    <div class="tuning-item">
+                                        <label>Twist Spring</label>
+                                        <span class="form-help form-help-above">Controls spring tension returning wheel to center.</span>
+                                        <div class="tuning-pi-row">
+                                            <label class="pi-label">Proportional</label>
+                                            <input type="number" step="0.01" id="twistP">
+                                            <label class="pi-label">Integral</label>
+                                            <input type="number" step="0.01" id="twistI">
+                                        </div>
+                                    </div>
+
+                                    <hr class="tuning-divider">
+
+                                    <div class="tuning-item">
+                                        <label>Momentum Free-spin</label>
+                                        <span class="form-help form-help-above">Controls heavy feel and frictionless spin length.</span>
+                                        <div class="tuning-pi-row">
+                                            <label class="pi-label">Proportional</label>
+                                            <input type="number" step="0.01" id="momentumP">
+                                            <label class="pi-label">Integral</label>
+                                            <input type="number" step="0.01" id="momentumI">
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Settings -->
+                <div class="glass-panel card">
+                    <h2><span class="material-symbols-outlined">person</span> Active Profile Setup</h2>
+
+                    <div class="profile-settings-row">
+                        <div class="form-group profile-field-wide">
+                            <label for="profileName">Profile Name</label>
+                            <span class="form-help form-help-above">Display text for the OLED screen.</span>
+                            <input type="text" id="profileName" maxlength="32" placeholder="e.g. Photoshop">
+                        </div>
+
+                        <div class="form-group profile-field-mid">
+                            <label for="wheelMode">Haptic Wheel Feel</label>
+                            <span class="form-help form-help-above">Physical feeling of the main knob.</span>
+                            <select id="wheelMode">
+                                <option value="Clicky">Clicky (Notched)</option>
+                                <option value="Twist">Twist (Spring)</option>
+                                <option value="Momentum">Momentum (Free)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group profile-field-mid">
+                            <label for="wheelKey">Wheel Key Output</label>
+                            <span class="form-help form-help-above">Key held while wheel moves.</span>
+                            <div class="input-with-btn">
+                                <input type="number" id="wheelKey" min="0" max="255">
+                                <button class="record-btn" id="btnRecordWheelKey" title="Press to Record Keypress">
+                                    <span class="material-symbols-outlined">radio_button_checked</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3><span class="material-symbols-outlined">keyboard</span> Macro Button Bindings</h3>
+                    <span class="form-help">Assign up to 3 chained actions (delays and keycodes) per physical button. Delay is in milliseconds (ms) before the keystroke fires.</span>
+
+                    <div class="macro-grid" id="macroGrid">
+                        <!-- Rendered explicitly 6 times via JS -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <script>
+        // Constants
+        const MAX_PROFILES = 256;
+        const MAX_BUTTONS = 6;
+
+        function getKeycodeFromEvent(e) {
+            let code = e.keyCode || e.which;
+            return code;
+        }
+
+        // Default template for a new profile
+        const createEmptyProfile = (name = "New Profile") => {
+            let profile = {
+                name: name,
+                wheelMode: "Clicky",
+                wheelKey: 0,
+                buttons: []
+            };
+            for (let i = 0; i < MAX_BUTTONS; i++) {
+                profile.buttons.push({
+                    label: `Button ${i + 1}`,
+                    actions: [
+                        { delay: 0, key: 0 },
+                        { delay: 0, key: 0 },
+                        { delay: 0, key: 0 }
+                    ]
+                });
+            }
+            return profile;
+        };
+
+        /**
+         * OOP State Manager
+         */
+        class MacropadState {
+            constructor() {
+                this._settings = {
+                    ledMode: "Breath",
+                    ledPrimary: "83,89,210",
+                    ledSecondary: "109,42,166",
+                    clickyP: "0.5",
+                    clickyI: "0",
+                    twistP: "0.65",
+                    twistI: "0.2",
+                    momentumP: "0.3",
+                    momentumI: "0"
+                };
+                this._profiles = [];
+                this._activeIndex = -1;
+            }
+
+            get settings() { return this._settings; }
+            get profiles() { return this._profiles; }
+
+            get activeProfile() {
+                if (this._activeIndex >= 0 && this._activeIndex < this._profiles.length) {
+                    return this._profiles[this._activeIndex];
+                }
+                return null;
+            }
+
+            get activeIndex() { return this._activeIndex; }
+            set activeIndex(idx) { this._activeIndex = idx; }
+
+            getAvailableProfileName() {
+                let names = this._profiles.map(p => p.name);
+                for (let i = 1; i <= MAX_PROFILES; i++) {
+                    let testName = `New Profile ${i}`;
+                    if (!names.includes(testName)) return testName;
+                }
+                return `New Profile`;
+            }
+
+            addProfile(profile) {
+                if (this._profiles.length >= MAX_PROFILES) return false;
+                this._profiles.push(profile);
+                this._activeIndex = this._profiles.length - 1;
+                return true;
+            }
+
+            duplicateProfile(index) {
+                if (this._profiles.length >= MAX_PROFILES) return false;
+                if (index < 0 || index >= this._profiles.length) return false;
+
+                let original = this._profiles[index];
+                let clone = JSON.parse(JSON.stringify(original));
+                clone.name = clone.name + " (Copy)";
+                this._profiles.splice(index + 1, 0, clone);
+                this._activeIndex = index + 1;
+                return true;
+            }
+
+            deleteProfile(index) {
+                if (index < 0 || index >= this._profiles.length) return false;
+                this._profiles.splice(index, 1);
+                if (this._activeIndex >= this._profiles.length) {
+                    this._activeIndex = this._profiles.length - 1;
+                }
+                return true;
+            }
+
+            loadFromXML(xmlDoc) {
+                try {
+                    // Parse Settings
+                    let settingsNode = xmlDoc.querySelector("Settings");
+                    if (settingsNode) {
+                        this._settings.ledMode = settingsNode.querySelector("LED_Mode")?.textContent.trim() || "Solid";
+                        this._settings.ledPrimary = settingsNode.querySelector("LED_Primary")?.textContent.trim() || "99,102,241";
+                        this._settings.ledSecondary = settingsNode.querySelector("LED_Secondary")?.textContent.trim() || "30,30,30";
+                        this._settings.clickyP = settingsNode.querySelector("Clicky_P")?.textContent.trim() || "0.5";
+                        this._settings.clickyI = settingsNode.querySelector("Clicky_I")?.textContent.trim() || "0";
+                        this._settings.twistP = settingsNode.querySelector("Twist_P")?.textContent.trim() || "0.65";
+                        this._settings.twistI = settingsNode.querySelector("Twist_I")?.textContent.trim() || "0.2";
+                        this._settings.momentumP = settingsNode.querySelector("Momentum_P")?.textContent.trim() || "0.3";
+                        this._settings.momentumI = settingsNode.querySelector("Momentum_I")?.textContent.trim() || "0";
+                    }
+
+                    // Parse Profiles
+                    this._profiles = [];
+                    let profileNodes = xmlDoc.querySelectorAll("Profiles > Profile");
+                    profileNodes.forEach(node => {
+                        if (this._profiles.length >= MAX_PROFILES) return;
+
+                        let profile = createEmptyProfile();
+                        profile.name = node.getAttribute("name") || "Loaded Profile";
+                        profile.wheelMode = node.querySelector("WheelMode")?.textContent || "Clicky";
+                        profile.wheelKey = parseInt(node.querySelector("WheelKey")?.textContent || "0");
+
+                        let buttonNodes = node.querySelectorAll("MacroButtons > MacroButton");
+                        for (let i = 0; i < MAX_BUTTONS && i < buttonNodes.length; i++) {
+                            let bNode = buttonNodes[i];
+                            profile.buttons[i].label = bNode.querySelector("Label")?.textContent || "";
+
+                            let actionNodes = bNode.querySelectorAll("Action");
+                            for (let a = 0; a < 3 && a < actionNodes.length; a++) {
+                                let parts = actionNodes[a].textContent.split(",");
+                                if (parts.length === 2) {
+                                    profile.buttons[i].actions[a].delay = parseInt(parts[0]);
+                                    profile.buttons[i].actions[a].key = parseInt(parts[1]);
+                                }
+                            }
+                        }
+                        this._profiles.push(profile);
+                    });
+
+                    if (this._profiles.length > 0) {
+                        this._activeIndex = 0;
+                    } else {
+                        this.addProfile(createEmptyProfile("Default Layout"));
+                    }
+
+                    return true;
+                } catch (e) {
+                    console.error("XML Parse Error:", e);
+                    return false;
+                }
+            }
+
+            exportToXML() {
+                let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+                xml += `<Configuration>\n`;
+
+                // Settings
+                xml += `  <Settings>\n`;
+                xml += `    <LED_Mode>${this._settings.ledMode}</LED_Mode>\n`;
+                xml += `    <LED_Primary>${this._settings.ledPrimary}</LED_Primary>\n`;
+                xml += `    <LED_Secondary>${this._settings.ledSecondary}</LED_Secondary>\n`;
+                xml += `    <Clicky_P>${this._settings.clickyP}</Clicky_P>\n`;
+                xml += `    <Clicky_I>${this._settings.clickyI}</Clicky_I>\n`;
+                xml += `    <Twist_P>${this._settings.twistP}</Twist_P>\n`;
+                xml += `    <Twist_I>${this._settings.twistI}</Twist_I>\n`;
+                xml += `    <Momentum_P>${this._settings.momentumP}</Momentum_P>\n`;
+                xml += `    <Momentum_I>${this._settings.momentumI}</Momentum_I>\n`;
+                xml += `  </Settings>\n`;
+
+                // Profiles
+                xml += `  <Profiles>\n`;
+                for (let profile of this._profiles) {
+                    xml += `\n    <Profile name="${profile.name}">\n`;
+                    xml += `      <WheelMode>${profile.wheelMode}</WheelMode>\n`;
+                    xml += `      <WheelKey>${profile.wheelKey}</WheelKey>\n`;
+                    xml += `      <MacroButtons>\n`;
+
+                    for (let btn of profile.buttons) {
+                        xml += `        <MacroButton>\n`;
+                        for (let act of btn.actions) {
+                            xml += `          <Action>${act.delay},${act.key}</Action>\n`;
+                        }
+                        xml += `          <Label>${btn.label}</Label>\n`;
+                        xml += `        </MacroButton>\n`;
+                    }
+
+                    xml += `      </MacroButtons>\n`;
+                    xml += `    </Profile>\n`;
+                }
+                xml += `\n  </Profiles>\n`;
+                xml += `</Configuration>\n`;
+                return xml;
+            }
+        }
+
+        /**
+         * UI Controller Class
+         */
+        class UIController {
+            constructor() {
+                this._state = new MacropadState();
+
+                // DOM Elements
+                this._els = {
+                    ambientBg: document.getElementById('ambientBg'),
+                    fileImport: document.getElementById('fileImport'),
+                    btnExport: document.getElementById('btnExport'),
+                    profileList: document.getElementById('profileList'),
+                    btnAddProfile: document.getElementById('btnAddProfile'),
+                    profileCount: document.getElementById('profileCount'),
+                    editorArea: document.getElementById('editorArea'),
+
+                    // Settings
+                    ledMode: document.getElementById('ledMode'),
+                    ledRing: document.getElementById('ledRing'),
+                    clickyP: document.getElementById('clickyP'),
+                    clickyI: document.getElementById('clickyI'),
+                    twistP: document.getElementById('twistP'),
+                    twistI: document.getElementById('twistI'),
+                    momentumP: document.getElementById('momentumP'),
+                    momentumI: document.getElementById('momentumI'),
+
+                    // Profile
+                    profileName: document.getElementById('profileName'),
+                    wheelMode: document.getElementById('wheelMode'),
+                    wheelKey: document.getElementById('wheelKey'),
+                    btnRecordWheelKey: document.getElementById('btnRecordWheelKey'),
+                    macroGrid: document.getElementById('macroGrid')
+                };
+
+                this._pickrPrimary = null;
+                this._pickrSecondary = null;
+                this._isRecording = false;
+                this._recordingTargetNode = null;
+
+                this._initPickr();
+                this._bindEvents();
+
+                // Keep ambient background perfectly aligned with LED ring
+                window.addEventListener('resize', () => this._updateAmbientPosition());
+                window.addEventListener('scroll', () => this._updateAmbientPosition(), true);
+
+                // Try loading default state if empty
+                if (this._state.profiles.length === 0) {
+                    this._state.addProfile(createEmptyProfile(this._state.getAvailableProfileName()));
+                }
+                this._renderAll();
+                setTimeout(() => this._updateAmbientPosition(), 100); // Give layout time to settle
+            }
+
+            _initPickr() {
+                const commonObj = {
+                    theme: 'classic',
+                    lockOpacity: true,
+                    comparison: false,
+                    defaultRepresentation: 'RGBA',
+                    components: {
+                        preview: true,
+                        opacity: false,
+                        hue: true,
+                        interaction: { hex: true, rgba: true, input: true, save: true, cancel: true }
+                    }
+                };
+
+                this._pickrPrimary = Pickr.create({
+                    ...commonObj,
+                    el: '#pickerPrimary',
+                    default: `rgb(${this._state.settings.ledPrimary})`,
+                });
+                this._pickrPrimary.on('save', (color) => {
+                    let rgba = color.toRGBA();
+                    let str = `${Math.round(rgba[0])},${Math.round(rgba[1])},${Math.round(rgba[2])}`;
+                    this._state.settings.ledPrimary = str;
+                    this._updateVisualizer();
+                    this._pickrPrimary.hide();
+                });
+
+                this._pickrSecondary = Pickr.create({
+                    ...commonObj,
+                    el: '#pickerSecondary',
+                    default: `rgb(${this._state.settings.ledSecondary})`,
+                });
+                this._pickrSecondary.on('save', (color) => {
+                    let rgba = color.toRGBA();
+                    let str = `${Math.round(rgba[0])},${Math.round(rgba[1])},${Math.round(rgba[2])}`;
+                    this._state.settings.ledSecondary = str;
+                    this._updateVisualizer();
+                    this._pickrSecondary.hide();
+                });
+            }
+
+            _bindEvents() {
+                // I/O
+                this._els.fileImport.addEventListener('change', (e) => this._handleImport(e));
+                this._els.btnExport.addEventListener('click', () => this._handleExport());
+
+                // Profiles
+                this._els.btnAddProfile.addEventListener('click', () => {
+                    let newName = this._state.getAvailableProfileName();
+                    if (this._state.addProfile(createEmptyProfile(newName))) {
+                        this._renderAll();
+                    }
+                });
+
+                // Settings 
+                this._els.ledMode.addEventListener('change', (e) => {
+                    this._state.settings.ledMode = e.target.value;
+                    this._updateVisualizer();
+                });
+
+                ['clickyP', 'clickyI', 'twistP', 'twistI', 'momentumP', 'momentumI'].forEach(key => {
+                    this._els[key].addEventListener('change', (e) => {
+                        this._state.settings[key] = e.target.value;
+                    });
+                });
+
+                // Active Profile Listeners
+                this._els.profileName.addEventListener('change', (e) => {
+                    let p = this._state.activeProfile;
+                    if (p) {
+                        let newName = e.target.value.trim() || "Unnamed";
+                        if (newName !== p.name && this._state.profiles.some(profile => profile.name === newName)) {
+                            alert("Profile name already exists! Please choose a unique name.");
+                            e.target.value = p.name;
+                            return;
+                        }
+                        p.name = newName;
+                        this._renderProfileList(); // Full re-render to update the list
+                    }
+                });
+
+                this._els.wheelMode.addEventListener('change', (e) => {
+                    let p = this._state.activeProfile;
+                    if (p) p.wheelMode = e.target.value;
+                });
+
+                this._els.wheelKey.addEventListener('change', (e) => {
+                    let p = this._state.activeProfile;
+                    if (p) p.wheelKey = parseInt(e.target.value) || 0;
+                });
+
+                // Wheel Key Record
+                this._els.btnRecordWheelKey.addEventListener('click', (e) => {
+                    this._startRecording(this._els.btnRecordWheelKey, this._els.wheelKey, (val) => {
+                        let p = this._state.activeProfile;
+                        if (p) p.wheelKey = val;
+                    });
+                });
+
+                // Global Keydown for Recording
+                document.addEventListener('keydown', (e) => {
+                    if (this._isRecording && this._recordingTargetNode) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        let code = getKeycodeFromEvent(e);
+
+                        if (this._recordingCallback) {
+                            this._recordingCallback(code);
+                        }
+                        this._stopRecording();
+                    }
+                }, true);
+            }
+
+            _startRecording(btnEl, inputEl, callback) {
+                if (this._isRecording) this._stopRecording();
+
+                this._isRecording = true;
+                this._recordingTargetNode = inputEl;
+                this._recordingCallback = (val) => {
+                    inputEl.value = val;
+                    callback(val);
+                };
+                btnEl.classList.add('recording');
+            }
+
+            _stopRecording() {
+                this._isRecording = false;
+                this._recordingTargetNode = null;
+                this._recordingCallback = null;
+                document.querySelectorAll('.recording').forEach(el => el.classList.remove('recording'));
+            }
+
+            _handleImport(e) {
+                let file = e.target.files[0];
+                if (!file) return;
+
+                let reader = new FileReader();
+                reader.onload = (evt) => {
+                    let xmlStr = evt.target.result;
+                    let domParser = new DOMParser();
+                    let xmlDoc = domParser.parseFromString(xmlStr, "application/xml");
+                    if (this._state.loadFromXML(xmlDoc)) {
+                        this._renderAll();
+                    } else {
+                        alert("Failed to parse XML config.");
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = null;
+            }
+
+            _handleExport() {
+                let xmlStr = this._state.exportToXML();
+                let blob = new Blob([xmlStr], { type: "text/xml" });
+                let url = URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                a.download = "config.xml";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            _renderAll() {
+                this._renderSettings();
+                this._renderProfileList();
+                this._renderActiveProfile();
+            }
+
+            _renderSettings() {
+                let s = this._state.settings;
+                this._els.ledMode.value = s.ledMode;
+                this._els.clickyP.value = s.clickyP;
+                this._els.clickyI.value = s.clickyI;
+                this._els.twistP.value = s.twistP;
+                this._els.twistI.value = s.twistI;
+                this._els.momentumP.value = s.momentumP;
+                this._els.momentumI.value = s.momentumI;
+
+                this._pickrPrimary.setColor(`rgb(${s.ledPrimary})`);
+                this._pickrPrimary.applyColor(true);
+                this._pickrSecondary.setColor(`rgb(${s.ledSecondary})`);
+                this._pickrSecondary.applyColor(true);
+
+                this._updateVisualizer();
+            }
+
+            _updateVisualizer() {
+                let s = this._state.settings;
+
+                // Set CSS vars for Ring and Ambient Background
+                const applyVars = (el) => {
+                    el.style.setProperty('--led-primary', `rgb(${s.ledPrimary})`);
+                    el.style.setProperty('--led-secondary', `rgb(${s.ledSecondary})`);
+                };
+
+                applyVars(this._els.ledRing);
+                applyVars(this._els.ambientBg);
+
+                // Assign Mode Classes
+                this._els.ledRing.className = `led-ring led-mode-${s.ledMode}`;
+                this._els.ambientBg.className = `ambient-mode-${s.ledMode}`;
+                this._updateAmbientPosition();
+            }
+
+            _updateAmbientPosition() {
+                if (!this._els.ledRing || !this._els.ambientBg) return;
+
+                const ringRect = this._els.ledRing.getBoundingClientRect();
+                const centerX = ringRect.left + ringRect.width / 2;
+                const centerY = ringRect.top + ringRect.height / 2;
+
+                this._els.ambientBg.style.left = `${centerX}px`;
+                this._els.ambientBg.style.top = `${centerY}px`;
+            }
+
+            _renderProfileList() {
+                let ul = this._els.profileList;
+                ul.innerHTML = "";
+                let profiles = this._state.profiles;
+
+                this._els.profileCount.textContent = profiles.length;
+                this._els.btnAddProfile.disabled = (profiles.length >= MAX_PROFILES);
+
+                profiles.forEach((p, idx) => {
+                    let li = document.createElement('li');
+                    if (idx === this._state.activeIndex) li.className = 'active';
+
+                    let nameSpan = document.createElement('span');
+                    nameSpan.className = 'p-name';
+                    nameSpan.textContent = p.name;
+
+                    let acts = document.createElement('div');
+                    acts.className = 'profile-actions';
+
+                    let btnDup = document.createElement('button');
+                    btnDup.className = 'icon-btn';
+                    btnDup.innerHTML = `<span class="material-symbols-outlined">content_copy</span>`;
+                    btnDup.title = "Duplicate";
+                    btnDup.disabled = (profiles.length >= MAX_PROFILES);
+                    btnDup.onclick = (e) => {
+                        e.stopPropagation();
+                        if (this._state.duplicateProfile(idx)) this._renderAll();
+                    };
+
+                    let btnDel = document.createElement('button');
+                    btnDel.className = 'icon-btn icon-btn-danger';
+                    btnDel.innerHTML = `<span class="material-symbols-outlined">delete</span>`;
+                    btnDel.title = "Delete Profile";
+                    btnDel.onclick = (e) => {
+                        e.stopPropagation();
+                        if (confirm("Delete profile?")) {
+                            if (this._state.deleteProfile(idx)) this._renderAll();
+                        }
+                    };
+
+                    acts.appendChild(btnDup);
+                    acts.appendChild(btnDel);
+
+                    li.appendChild(nameSpan);
+                    li.appendChild(acts);
+
+                    li.onclick = () => {
+                        this._state.activeIndex = idx;
+                        this._renderProfileList();
+                        this._renderActiveProfile();
+                    };
+
+                    ul.appendChild(li);
+                });
+            }
+
+            _renderActiveProfile() {
+                let p = this._state.activeProfile;
+                if (!p) {
+                    this._els.editorArea.classList.add('hidden');
+                    return;
+                }
+                this._els.editorArea.classList.remove('hidden');
+
+                this._els.profileName.value = p.name;
+                this._els.wheelMode.value = p.wheelMode;
+                this._els.wheelKey.value = p.wheelKey;
+
+                // Render Macros Grid
+                let grid = this._els.macroGrid;
+                grid.innerHTML = "";
+
+                for (let i = 0; i < MAX_BUTTONS; i++) {
+                    let btnData = p.buttons[i];
+                    let card = document.createElement('article');
+                    card.className = 'macro-card';
+
+                    let header = document.createElement('header');
+                    header.innerHTML = `Button ${i + 1}`;
+                    card.appendChild(header);
+
+                    // Label
+                    let labelDiv = document.createElement('div');
+                    labelDiv.className = 'action-row mb-lg';
+                    labelDiv.innerHTML = `
+                        <div class="flex-1">
+                            <label class="action-label">Screen Label</label>
+                            <input type="text" maxlength="10" value="${btnData.label}" placeholder="Max 10 chars" class="action-input m-0">
+                        </div>`;
+                    labelDiv.querySelector('input').addEventListener('input', (e) => {
+                        btnData.label = e.target.value;
+                    });
+                    card.appendChild(labelDiv);
+
+                    // Actions 1-3
+                    for (let a = 0; a < 3; a++) {
+                        let actRow = document.createElement('div');
+                        actRow.className = 'action-row';
+
+                        let rowHtml = `
+                            <div class="action-flex-1">
+                                <label class="action-label">Delay</label>
+                                <input type="number" min="0" value="${btnData.actions[a].delay}" class="action-input">
+                            </div>
+                            <div class="action-flex-2">
+                                <label class="action-label">Action ${a + 1}</label>
+                                <div class="flex gap-xs items-stretch">
+                                    <input type="number" min="0" value="${btnData.actions[a].key}" class="key-input action-input m-0">
+                                    <button class="record-btn record-btn-fixed" title="Record Key"><span class="material-symbols-outlined">radio_button_checked</span></button>
+                                </div>
+                            </div>`;
+
+                        actRow.innerHTML = rowHtml;
+
+                        let delayInput = actRow.querySelector('input[type="number"]:first-of-type');
+                        let keyInput = actRow.querySelector('.key-input');
+                        let recBtn = actRow.querySelector('.record-btn');
+
+                        delayInput.addEventListener('change', (e) => {
+                            btnData.actions[a].delay = parseInt(e.target.value) || 0;
+                        });
+
+                        keyInput.addEventListener('change', (e) => {
+                            btnData.actions[a].key = parseInt(e.target.value) || 0;
+                        });
+
+                        recBtn.addEventListener('click', (e) => {
+                            this._startRecording(recBtn, keyInput, (val) => {
+                                btnData.actions[a].key = val;
+                            });
+                        });
+
+                        card.appendChild(actRow);
+                    }
+
+                    grid.appendChild(card);
+                }
+            }
+        }
+
+        // Bootstrap app
+        window.addEventListener('DOMContentLoaded', () => {
+            window.app = new UIController();
+
+            const DEFAULT_XML = `<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+  <Settings>
+    <LED_Mode>Breath</LED_Mode>
+    <LED_Primary>83,89,210</LED_Primary>
+    <LED_Secondary>109,42,166</LED_Secondary>
+    <Clicky_P>0.5</Clicky_P>
+    <Clicky_I>0</Clicky_I>
+    <Twist_P>0.65</Twist_P>
+    <Twist_I>0.2</Twist_I>
+    <Momentum_P>0.3</Momentum_P>
+    <Momentum_I>0</Momentum_I>
+  </Settings>
+  <Profiles>
+    <Profile name="Example 1">
+      <WheelMode>Clicky</WheelMode>
+      <WheelKey>0</WheelKey>
+      <MacroButtons>
+        <MacroButton>
+          <Action>0,49</Action>
+          <Action>0,0</Action>
+          <Action>0,0</Action>
+          <Label>Button 1</Label>
+        </MacroButton>
+        <MacroButton>
+          <Action>0,50</Action>
+          <Action>0,0</Action>
+          <Action>0,0</Action>
+          <Label>Button 2</Label>
+        </MacroButton>
+        <MacroButton>
+          <Action>0,51</Action>
+          <Action>0,0</Action>
+          <Action>0,0</Action>
+          <Label>Button 3</Label>
+        </MacroButton>
+        <MacroButton>
+          <Action>0,52</Action>
+          <Action>0,0</Action>
+          <Action>0,0</Action>
+          <Label>Button 4</Label>
+        </MacroButton>
+        <MacroButton>
+          <Action>0,53</Action>
+          <Action>0,0</Action>
+          <Action>0,0</Action>
+          <Label>Button 5</Label>
+        </MacroButton>
+        <MacroButton>
+          <Action>0,54</Action>
+          <Action>0,0</Action>
+          <Action>0,0</Action>
+          <Label>Button 6</Label>
+        </MacroButton>
+      </MacroButtons>
+    </Profile>
+  </Profiles>
+</Configuration>`;
+
+            try {
+                let domParser = new DOMParser();
+                let xmlDoc = domParser.parseFromString(DEFAULT_XML, "application/xml");
+                if (window.app._state.loadFromXML(xmlDoc)) window.app._renderAll();
+            } catch (e) {
+                console.error("Error loading embedded XML:", e);
+            }
+        });
+
+    </script>
+</body>
+</html>
